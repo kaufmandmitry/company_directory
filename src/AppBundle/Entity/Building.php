@@ -26,6 +26,7 @@ class Building
      * @var string
      *
      * @ORM\Column(name="streetName", type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $streetName;
 
@@ -33,6 +34,7 @@ class Building
      * @var int
      *
      * @ORM\Column(name="buildingNumber", type="integer")
+     * @Assert\NotBlank()
      */
     private $buildingNumber;
 
@@ -40,6 +42,7 @@ class Building
      * @var float
      *
      * @ORM\Column(name="coordinateX", type="float")
+     * @Assert\NotBlank()
      */
     private $coordinateX;
 
@@ -47,6 +50,7 @@ class Building
      * @var float
      *
      * @ORM\Column(name="coordinateY", type="float")
+     * @Assert\NotBlank()
      */
     private $coordinateY;
 
@@ -157,4 +161,3 @@ class Building
         return $this->coordinateY;
     }
 }
-

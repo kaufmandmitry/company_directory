@@ -5,6 +5,7 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\ArrayCollection;
+use AppBundle\Entity\Firm;
 
 /**
  * Category
@@ -27,6 +28,7 @@ class Category
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $name;
 
@@ -42,12 +44,27 @@ class Category
      * @ORM\OneToMany(targetEntity="Category", mappedBy="parentCategory")
      */
     private $childCategories;
+    
+    /**
+     * @var ArrayCollection
+     * @ORM\ManyToMany(targetEntity="Firm", mappedBy="categories")
+     */
+    private $firms;
 
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->childCategories = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->firms = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     /**
      * Get id
      *
-     * @return int
+     * @return integer
      */
     public function getId()
     {
@@ -81,11 +98,11 @@ class Category
     /**
      * Set parentCategory
      *
-     * @param Category $parentCategory
+     * @param \AppBundle\Entity\Category $parentCategory
      *
      * @return Category
      */
-    public function setParentCategory($parentCategory)
+    public function setParentCategory(\AppBundle\Entity\Category $parentCategory = null)
     {
         $this->parentCategory = $parentCategory;
 
@@ -95,7 +112,7 @@ class Category
     /**
      * Get parentCategory
      *
-     * @return Category
+     * @return \AppBundle\Entity\Category
      */
     public function getParentCategory()
     {
@@ -103,27 +120,70 @@ class Category
     }
 
     /**
-     * Set childCategories
+     * Add childCategory
      *
-     * @param array $childCategories
+     * @param \AppBundle\Entity\Category $childCategory
      *
      * @return Category
      */
-    public function setChildCategories($childCategories)
+    public function addChildCategory(\AppBundle\Entity\Category $childCategory)
     {
-        $this->childCategories = $childCategories;
+        $this->childCategories[] = $childCategory;
 
         return $this;
     }
 
     /**
+     * Remove childCategory
+     *
+     * @param \AppBundle\Entity\Category $childCategory
+     */
+    public function removeChildCategory(\AppBundle\Entity\Category $childCategory)
+    {
+        $this->childCategories->removeElement($childCategory);
+    }
+
+    /**
      * Get childCategories
      *
-     * @return ArrayCollection
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getChildCategories()
     {
         return $this->childCategories;
     }
-}
 
+    /**
+     * Add firm
+     *
+     * @param \AppBundle\Entity\Firm $firm
+     *
+     * @return Category
+     */
+    public function addFirm(\AppBundle\Entity\Firm $firm)
+    {
+        $this->firms[] = $firm;
+
+        return $this;
+    }
+
+    /**
+     * Remove firm
+     *
+     * @param \AppBundle\Entity\Firm $firm
+     */
+    public function removeFirm(\AppBundle\Entity\Firm $firm)
+    {
+        $this->firms->removeElement($firm);
+    }
+
+    /**
+     * Get firms
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getFirms()
+    {
+        return $this->firms;
+    }
+}

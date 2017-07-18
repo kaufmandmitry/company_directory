@@ -27,6 +27,7 @@ class Firm
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $name;
 
@@ -34,6 +35,7 @@ class Firm
      * @var ArrayCollection
      *
      * @ORM\Column(name="phoneNumbers", type="array")
+     * @Assert\NotBlank()
      */
     private $phoneNumbers;
 
@@ -48,16 +50,25 @@ class Firm
 
     /**
      * @var ArrayCollection
-     * @ORM\Column(name="categories")
+     * 
      * @ORM\ManyToMany(targetEntity="Category", inversedBy="firms")
      * @ORM\JoinTable(name="x_firm_category")
+     * @Assert\NotBlank()
      */
     private $categories;
+    
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->categories = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     /**
      * Get id
      *
-     * @return int
+     * @return integer
      */
     public function getId()
     {
@@ -113,27 +124,13 @@ class Firm
     }
 
     /**
-     * Add phoneNumber
-     *
-     * @param string $phoneNumber
-     *
-     * @return Firm
-     */
-    public function addPhoneNumber($phoneNumber)
-    {
-        $this->phoneNumbers[] = $phoneNumber;
-
-        return $this;
-    }
-
-    /**
      * Set building
      *
-     * @param Building $building
+     * @param \AppBundle\Entity\Building $building
      *
      * @return Firm
      */
-    public function setBuilding($building)
+    public function setBuilding(\AppBundle\Entity\Building $building = null)
     {
         $this->building = $building;
 
@@ -143,7 +140,7 @@ class Firm
     /**
      * Get building
      *
-     * @return Building
+     * @return \AppBundle\Entity\Building
      */
     public function getBuilding()
     {
@@ -151,23 +148,33 @@ class Firm
     }
 
     /**
-     * Set categories
+     * Add category
      *
-     * @param array $categories
+     * @param \AppBundle\Entity\Category $category
      *
      * @return Firm
      */
-    public function setCategories($categories)
+    public function addCategory(\AppBundle\Entity\Category $category)
     {
-        $this->categories = $categories;
+        $this->categories[] = $category;
 
         return $this;
     }
 
     /**
+     * Remove category
+     *
+     * @param \AppBundle\Entity\Category $category
+     */
+    public function removeCategory(\AppBundle\Entity\Category $category)
+    {
+        $this->categories->removeElement($category);
+    }
+
+    /**
      * Get categories
      *
-     * @return array
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getCategories()
     {
@@ -175,17 +182,25 @@ class Firm
     }
 
     /**
-     * Add category
+     * Add phoneNumber
      *
-     * @param $categories
+     * @param string $phoneNumber
      *
      * @return Firm
      */
-    public function addCategory($category)
+    public function addPhoneNumber($phoneNumber)
     {
-        $this->categories[] = $category;
-
+        $this->phoneNumbers[] = $phoneNumber;
         return $this;
     }
-}
 
+    /**
+     * Remove phoneNumber
+     *
+     * @param string $phoneNumber
+     */
+    public function removePhoneNumber($phoneNumber)
+    {
+        $this->phoneNumbers->removeElement($phoneNumber);
+    }
+}

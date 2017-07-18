@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -54,6 +55,11 @@ class Building
      */
     private $coordinateY;
 
+   /**
+    * @var ArrayCollection
+    * @ORM\OneToMany(targetEntity="Firm", mappedBy="categories")
+    */
+    private $firms;
 
     /**
      * Get id
@@ -159,5 +165,46 @@ class Building
     public function getCoordinateY()
     {
         return $this->coordinateY;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->firms = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add firm
+     *
+     * @param \AppBundle\Entity\Firm $firm
+     *
+     * @return Building
+     */
+    public function addFirm(\AppBundle\Entity\Firm $firm)
+    {
+        $this->firms[] = $firm;
+
+        return $this;
+    }
+
+    /**
+     * Remove firm
+     *
+     * @param \AppBundle\Entity\Firm $firm
+     */
+    public function removeFirm(\AppBundle\Entity\Firm $firm)
+    {
+        $this->firms->removeElement($firm);
+    }
+
+    /**
+     * Get firms
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getFirms()
+    {
+        return $this->firms;
     }
 }

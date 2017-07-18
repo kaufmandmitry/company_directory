@@ -51,7 +51,6 @@ class Category
      */
     private $firms;
 
-
     /**
      * Constructor
      */

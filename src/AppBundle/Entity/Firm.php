@@ -42,7 +42,7 @@ class Firm
     /**
      * @var Building
      *
-     * @ORM\OneToOne(targetEntity="Building")
+     * @ORM\ManyToOne(targetEntity="Building")
      * @ORM\JoinColumn(name="building_id", referencedColumnName="id")
      * @Assert\NotBlank()
      */
@@ -50,7 +50,7 @@ class Firm
 
     /**
      * @var ArrayCollection
-     * 
+     *
      * @ORM\ManyToMany(targetEntity="Category", inversedBy="firms")
      * @ORM\JoinTable(name="x_firm_category")
      * @Assert\NotBlank()
@@ -202,5 +202,17 @@ class Firm
     public function removePhoneNumber($phoneNumber)
     {
         $this->phoneNumbers->removeElement($phoneNumber);
+    }
+
+    /**
+     * Firm has the category
+     *
+     * @param Category $category
+     *
+     * @return bool
+     */
+    public function hasCategory($category)
+    {
+        return $this->categories->contains($category);
     }
 }

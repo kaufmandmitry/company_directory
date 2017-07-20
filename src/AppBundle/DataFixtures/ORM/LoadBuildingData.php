@@ -25,8 +25,8 @@ class LoadBuildingData extends AbstractFixture implements OrderedFixtureInterfac
                 $building = new Building();
                 $building->setStreetName('Street ' . $i); // Count of street is equal to count of category
                 $building->setBuildingNumber($j);         //For 3 buildings per street
-                $building->setCoordinateX(rand(-1000, 1000));
-                $building->setCoordinateY(rand(-1000, 1000));
+                $building->setCoordinateX(rand(-10000, 10000));
+                $building->setCoordinateY(rand(-10000, 10000));
 
                 $manager->persist($building);
                 $manager->flush();

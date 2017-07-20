@@ -17,3 +17,8 @@ parameters:
 
     # A secret key that's used to generate certain security-related tokens
     secret: ThisTokenIsNotSoSecretChangeIt
+
+    #Parameters of fixtures
+    depth_tree: 3
+    width_tree: 3
+    count_firm_on_category: 10

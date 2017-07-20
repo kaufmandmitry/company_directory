@@ -33,4 +33,12 @@ class CategoryRepository extends \Doctrine\ORM\EntityRepository
 
         return $res;
     }
+
+    public function getCount() {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb->select('count(c.id)');
+        $qb->from(Category::class,'c');
+
+        return $qb->getQuery()->getSingleScalarResult();
+    }
 }

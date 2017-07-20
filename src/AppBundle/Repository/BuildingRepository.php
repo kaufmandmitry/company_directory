@@ -1,6 +1,7 @@
 <?php
 
 namespace AppBundle\Repository;
+use AppBundle\Entity\Building;
 
 /**
  * BuildRepository
@@ -10,4 +11,11 @@ namespace AppBundle\Repository;
  */
 class BuildingRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function getCount() {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb->select('count(b.id)');
+        $qb->from(Building::class,'b');
+
+        return $qb->getQuery()->getSingleScalarResult();
+    }
 }

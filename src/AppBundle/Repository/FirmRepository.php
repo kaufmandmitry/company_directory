@@ -1,6 +1,7 @@
 <?php
 
 namespace AppBundle\Repository;
+use AppBundle\Entity\Firm;
 
 /**
  * FirmRepository
@@ -10,4 +11,11 @@ namespace AppBundle\Repository;
  */
 class FirmRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function getCount() {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb->select('count(f.id)');
+        $qb->from(Firm::class,'f');
+
+        return $qb->getQuery()->getSingleScalarResult();
+    }
 }

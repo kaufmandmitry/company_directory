@@ -72,7 +72,7 @@ class CategoriesController extends ApiController
             ->select(['c.id', 'c.name'])
             ->where($qb->expr()->eq('c.id', $id))
             ->getQuery()
-            ->getSingleResult();
+            ->getArrayResult();
 
         if (!$category) {
             return $this->renderError(404, 'Not found');
@@ -81,14 +81,14 @@ class CategoriesController extends ApiController
         $category['parentCategory'] = $qb
             ->select(['pc.id', 'pc.name'])
             ->innerJoin('c.parentCategory', 'pc')
-            ->where($qb->expr()->eq('c.id', $category['id']))
+            ->where($qb->expr()->eq('c.id', $category[0]['id']))
             ->getQuery()
-            ->getSingleResult();
+            ->getArrayResult();
 
         $category['childCategories'] = $qb
             ->select(['cc.id', 'cc.name'])
             ->innerJoin('c.childCategories', 'cc')
-            ->where($qb->expr()->eq('c.id', $category['id']))
+            ->where($qb->expr()->eq('c.id', $category[0]['id']))
             ->getQuery()
             ->getArrayResult();
 

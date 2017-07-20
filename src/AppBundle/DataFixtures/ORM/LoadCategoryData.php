@@ -3,9 +3,11 @@
 namespace AppBundle\DataFixtures\ORM;
 
 use AppBundle\Entity\Category;
+use AppBundle\Repository\CategoryRepository;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManager;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -16,34 +18,35 @@ class LoadCategoryData extends AbstractFixture implements OrderedFixtureInterfac
      */
     private $container;
 
+    /* @param ObjectManager $manager */
     public function load(ObjectManager $manager)
     {
+        /* @var EntityManager $em */
+        $em = $this->container->get('doctrine.orm.entity_manager');
+
+        /* @var CategoryRepository $categoryRepository */
+        $categoryRepository = $em->getRepository(Category::class);
+
         $depthTree = $this->container->getParameter('depth_category_tree');
         $widthTree = $this->container->getParameter('width_category_tree');
-        for ($i = 0; $i < $widthTree; $i++) {
-            $parentCategory = new Category();
-            $parentCategory->setName('Root '. $i);
 
-            $manager->persist($parentCategory);
-            $manager->flush();
-            self::recursiveCategoreTreeFill($parentCategory, 0, $depthTree, $widthTree, $manager);
+        /* @var Category[] */
+        $categories = [];
+        $parentCategories[] = null;
+
+        for ($level = 1; $level <= $depthTree; $level++) { // For level of a tree
+
+            for ($i = 0; $i < pow($widthTree, $level); $i++) {
+                $categories[$i] = new Category();
+                $categories[$i]->setName('Category ' . $level . ' ' . $i);
+                $categories[$i]->setParentCategory($parentCategories[($i - $i % $widthTree) / $widthTree]);
+                $em->persist($categories[$i]);
+            }
+
+            $parentCategories = $categories;
+
+            $em->flush();
         }
-    }
-
-    /* @param ObjectManager $manager
-     * @param Category $parentCategory
-     */
-    static private function recursiveCategoreTreeFill($parentCategory, $currentDepth, $maxDepth, $widthTree, $manager) {
-        if ($currentDepth == $maxDepth) return;
-        for ($i = 0; $i < $widthTree; $i++) {
-            $category = new Category();
-            $category->setName('Category ' . $parentCategory->getId() . ' ' . $i . ' ' . $currentDepth);
-            $category->setParentCategory($parentCategory);
-            $manager->persist($category);
-            $manager->flush();
-            LoadCategoryData::recursiveCategoreTreeFill($category, $currentDepth + 1, $maxDepth, $widthTree, $manager);
-        }
-
     }
 
     public function getOrder()

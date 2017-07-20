@@ -81,7 +81,7 @@ class FirmsController extends ApiController
             ->innerJoin('f.building', 'b')
             ->where($qb->expr()->eq('f.id', $id))
             ->getQuery()
-            ->getSingleResult();
+            ->getArrayResult();
 
         if (!$firm) {
             return $this->renderError(404, 'Not found');
@@ -92,7 +92,7 @@ class FirmsController extends ApiController
             'c.name as categoryName'
         ])
         ->innerJoin('f.categories', 'c')
-        ->where($qb->expr()->eq('f.id', $firm['id']))
+        ->where($qb->expr()->eq('f.id', $firm[0]['id']))
         ->getQuery()
         ->getArrayResult();
 

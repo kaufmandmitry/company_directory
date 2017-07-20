@@ -26,12 +26,6 @@ class LoadCategoryData extends AbstractFixture implements OrderedFixtureInterfac
 
             $manager->persist($parentCategory);
             $manager->flush();
-
-            $parentCategory->setName($parentCategory->getId() . '. ' . $parentCategory->getName());
-
-            $manager->persist($parentCategory);
-            $manager->flush();
-
             self::recursiveCategoreTreeFill($parentCategory, 0, $depthTree, $widthTree, $manager);
         }
     }
@@ -47,11 +41,9 @@ class LoadCategoryData extends AbstractFixture implements OrderedFixtureInterfac
             $category->setParentCategory($parentCategory);
             $manager->persist($category);
             $manager->flush();
-            $category->setName($category->getId() . '. ' . $category->getName());
-            $manager->persist($category);
-            $manager->flush();
             LoadCategoryData::recursiveCategoreTreeFill($category, $currentDepth + 1, $maxDepth, $widthTree, $manager);
         }
+
     }
 
     public function getOrder()

@@ -24,12 +24,13 @@ class CategoryRepository extends \Doctrine\ORM\EntityRepository
         $categoryIterator = new RecursiveCategoryIterator($collection);
         $recursiveIterator = new \RecursiveIteratorIterator($categoryIterator, \RecursiveIteratorIterator::SELF_FIRST);
 
-        $res = [];
+        $res[] = $parentCategory->getId();
 
         foreach ($recursiveIterator as $index => $childCategory)
         {
             $res[] = $childCategory->getId();
         }
+
 
         return $res;
     }

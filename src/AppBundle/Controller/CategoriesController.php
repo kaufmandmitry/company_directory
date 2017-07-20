@@ -82,8 +82,8 @@ class CategoriesController extends ApiController
     }
 
     /**
-     * List of firms in the category
-     * @Route("/categoryFirms/{id}/{page}/{perPage}", name="categoriesList",
+     * List of firms in the category and any subcategories of category
+     * @Route("/categories/firmsByCategory/{id}/{page}/{perPage}", name="categoryFirmList",
      *     requirements={"id": "\d+", "page": "\d+", "perPage": "\d+"}, defaults={"page": 1, "perPage": 100})
      * @Method("GET")
      *
@@ -97,9 +97,8 @@ class CategoriesController extends ApiController
     {
         /* @var FirmRepository $firmRepository */
         $firmRepository = $this->getDoctrine()->getRepository(Firm::class);
-
         $qb = $firmRepository->createQueryBuilder('f');
-        $firmsList = $firmRepository->createQueryBuilder('f')
+        $firmsList = $qb
             ->select(['f.id', 'f.name', 'f.phoneNumbers'])
             ->innerJoin(Category::class, 'c', 'WITH', 'c.id = :requestedId')
             ->setParameter('requestedId', $id)

@@ -84,7 +84,7 @@ class BuildingsController extends ApiController
 
     /**
      * Get list of firm in the building
-     * @Route("/buildingFirms/{id}/{page}/{perPage}", name="buildingsFirmsList",
+     * @Route("/buildings/firms/{id}/{page}/{perPage}", name="buildingsFirmsList",
      *     requirements={"id": "\d+", "page": "\d+", "perPage": "\d+"}, defaults={"page": 1, "perPage": 100})
      * @Method("GET")
      *
@@ -96,7 +96,7 @@ class BuildingsController extends ApiController
      */
     public function buildingFirmsAction($id, $page, $perPage)
     {
-        /* @var CategoryRepository $categoryRepository */
+        /* @var FirmRepository $firmRepository */
         $firmRepository = $this->getDoctrine()->getRepository(Firm::class);
         $qb = $firmRepository->createQueryBuilder('b');
         $firmsList = $firmRepository->createQueryBuilder('f')

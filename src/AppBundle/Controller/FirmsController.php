@@ -82,4 +82,74 @@ class FirmsController extends ApiController
         return $this->renderData($firm);
     }
 
+    /**
+     * List Firms in radius
+     * @Route("/firms/inRadius/{x}/{y}/{r}/{page}/{perPage}", name="firmsInRadius",
+     *     requirements={"x": "\-?\d+(\.\d{0,})?", "y": "\-?\d+(\.\d{0,})?", "r": "\-?\d+(\.\d{0,})?", "page": "\d+", "perPage": "\d+"},
+     *     defaults={"page": 1, "perPage": 100})
+     * @Method("GET")
+     *
+     * @param integer $page
+     * @param integer $perPage
+     * @param float $x
+     * @param float $y
+     * @param float $r
+     *
+     * @return Response
+     */
+    public function firmsInRadiusAction($x, $y, $r, $page, $perPage)
+    {
+        /* @var FirmRepository $firmRepository */
+        $firmRepository = $this->getDoctrine()->getRepository(Firm::class);
+        $qb = $firmRepository->createQueryBuilder('f');
+        $firmsList = $qb
+            ->select(['f.id', 'f.name', 'f.phoneNumbers', 'b.streetName as street', 'b.buildingNumber as building',
+                'b.coordinateX', 'b.coordinateY'])
+            ->innerJoin('f.building', 'b')
+            ->where($qb->expr()->lte('((b.coordinateX - :x) * (b.coordinateX - :x)) + ((b.coordinateY - :y) * (b.coordinateY - :y))', pow($r, 2)))
+            ->setParameter('x', $x)
+            ->setParameter('y', $y)
+            ->getQuery()
+            ->setFirstResult(($page - 1) * $perPage)
+            ->setMaxResults($perPage)
+            ->getArrayResult();
+
+        return $this->renderData($firmsList);
+    }
+
+    /**
+     * List firms by category
+     * @Route("/firms/byCategory/{id}/{page}/{perPage}", name="firmsByCategory",
+     *     requirements={"id": "\d+", "page": "\d+", "perPage": "\d+"},
+     *     defaults={"page": 1, "perPage": 100})
+     * @Method("GET")
+     *
+     * @param integer $id
+     * @param integer $page
+     * @param integer $perPage
+     *
+     * @return Response
+     */
+    public function firmsByCategoryAction($id, $page, $perPage)
+    {
+        /* @var FirmRepository $firmRepository */
+        $firmRepository = $this->getDoctrine()->getRepository(Firm::class);
+        $qb = $firmRepository->createQueryBuilder('f');
+        /* @var CategoryRepository $categoryRepository */
+        $categoryRepository = $this->getDoctrine()->getRepository(Category::class);
+        $categoryIds = $categoryRepository->getChildrenCategoryIds($id);
+//var_dump($categoryIds);
+//die();
+        $firmsList = $qb
+            ->select(['f.id', 'f.name', 'f.phoneNumbers', 'c.id as categoryId', 'c.name as categoryName'])
+            ->innerJoin(Category::class, 'c', 'WITH')
+//            ->setParameter('id', $id)
+            ->getQuery()->getSQL();
+        var_dump($firmsList);die();
+//            ->setFirstResult(($page - 1) * $perPage)
+//            ->setMaxResults($perPage)
+//            ->getArrayResult();
+
+        return $this->renderData($firmsList);
+    }
 }

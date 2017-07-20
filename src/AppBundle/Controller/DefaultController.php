@@ -17,7 +17,7 @@ class DefaultController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         /* @var Category[] $res */
-        $category = $em->getRepository(Category::class)->findOneBy(['id' => 5419]);
+        $category = $em->getRepository(Category::class)->findOneBy(['id' => 1]);
 
         $res = $category->getFirms();
 

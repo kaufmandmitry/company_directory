@@ -13,7 +13,7 @@ class ApiController extends Controller
      *
      * @param array $data
      *
-     * @return string
+     * @return Response
      */
     public function renderData($data = [])
     {
@@ -31,7 +31,7 @@ class ApiController extends Controller
      * @param integer $code
      * @param string $message
      *
-     * @return string
+     * @return Response
      */
     public function renderError($code, $message)
     {

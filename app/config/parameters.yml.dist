@@ -19,6 +19,6 @@ parameters:
     secret: ThisTokenIsNotSoSecretChangeIt
 
     #Parameters of fixtures
-    depth_tree: 3
-    width_tree: 3
+    depth_category_tree: 3
+    width_category_tree: 3
     count_firm_on_category: 10

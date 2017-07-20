@@ -27,7 +27,7 @@ class FirmsController extends ApiController
         $firmRepository = $this->getDoctrine()->getRepository(Firm::class);
         $count = $firmRepository->getCount();
 
-        return $this->renderData($count);
+        return $this->renderData(['count' => $count]);
     }
 
     /**
@@ -43,7 +43,7 @@ class FirmsController extends ApiController
      */
     public function listAction($page, $perPage)
     {
-        /* @var CategoryRepository $categoryRepository */
+        /* @var FirmRepository $firmRepository */
         $firmRepository = $this->getDoctrine()->getRepository(Firm::class);
         $firmsList = $firmRepository->createQueryBuilder('f')
             ->select(['f.id', 'f.name', 'f.phoneNumbers', 'b.streetName as street', 'b.buildingNumber as building'])
@@ -58,7 +58,7 @@ class FirmsController extends ApiController
 
     /**
      * View firm
-     * @Route("/firms/{id}", name="firmsView", requirements={"id": "\d+"})
+     * @Route("/firms/view/{id}", name="firmsView", requirements={"id": "\d+"})
      * @Method("GET")
      *
      * @param integer $id
@@ -71,24 +71,41 @@ class FirmsController extends ApiController
         $firmRepository = $this->getDoctrine()->getRepository(Firm::class);
         $qb = $firmRepository->createQueryBuilder('f');
         $firm = $qb
-            ->select(['f.id', 'f.name', 'f.phoneNumbers', 'b.streetName as street', 'b.buildingNumber as building'])
+            ->select([
+                'f.id',
+                'f.name',
+                'f.phoneNumbers',
+                'b.streetName as street',
+                'b.buildingNumber as building'
+            ])
             ->innerJoin('f.building', 'b')
             ->where($qb->expr()->eq('f.id', $id))
             ->getQuery()
-            ->getArrayResult();
+            ->getSingleResult();
+
         if (!$firm) {
             return $this->renderError(404, 'Not found');
         }
+
+        $firm['categories'] = $qb->select([
+            'c.id as categoryId',
+            'c.name as categoryName'
+        ])
+        ->innerJoin('f.categories', 'c')
+        ->where($qb->expr()->eq('f.id', $firm['id']))
+        ->getQuery()
+        ->getArrayResult();
+
         return $this->renderData($firm);
     }
 
     /**
-     * List Firms in radius
-     * @Route("/firms/inRadius/{x}/{y}/{r}/{page}/{perPage}", name="firmsInRadius",
-     *     requirements={"x": "\-?\d+(\.\d{0,})?", "y": "\-?\d+(\.\d{0,})?", "r": "\-?\d+(\.\d{0,})?", "page": "\d+", "perPage": "\d+"},
-     *     defaults={"page": 1, "perPage": 100})
-     * @Method("GET")
+     * List firms in radius
+     * @Route("/firms/byRadius/{x}/{y}/{r}/{page}/{perPage}", name="firmsByRadius",
+     *     requirements={"x": "\-?\d+(\.\d{0,})?", "y": "\-?\d+(\.\d{0,})?", "r": "\-?\d+(\.\d{0,})?",
+     *     "page": "\d+", "perPage": "\d+"}, defaults={"page": 1, "perPage": 100})
      *
+     * @Method("GET")
      * @param integer $page
      * @param integer $perPage
      * @param float $x
@@ -97,7 +114,7 @@ class FirmsController extends ApiController
      *
      * @return Response
      */
-    public function firmsInRadiusAction($x, $y, $r, $page, $perPage)
+    public function firmsByRadiusAction($x, $y, $r, $page, $perPage)
     {
         /* @var FirmRepository $firmRepository */
         $firmRepository = $this->getDoctrine()->getRepository(Firm::class);
@@ -118,43 +135,7 @@ class FirmsController extends ApiController
     }
 
     /**
-     * List firms by category
-     * @Route("/firms/byCategory/{id}/{page}/{perPage}", name="firmsByCategory",
-     *     requirements={"id": "\d+", "page": "\d+", "perPage": "\d+"},
-     *     defaults={"page": 1, "perPage": 100})
-     * @Method("GET")
-     *
-     * @param integer $id
-     * @param integer $page
-     * @param integer $perPage
-     *
-     * @return Response
-     */
-    public function firmsByCategoryAction($id, $page, $perPage)
-    {
-        /* @var FirmRepository $firmRepository */
-        $firmRepository = $this->getDoctrine()->getRepository(Firm::class);
-        $qb = $firmRepository->createQueryBuilder('f');
-        /* @var CategoryRepository $categoryRepository */
-        $categoryRepository = $this->getDoctrine()->getRepository(Category::class);
-        $categoryIds = $categoryRepository->getChildrenCategoryIds($id);
-//var_dump($categoryIds);
-//die();
-        $firmsList = $qb
-            ->select(['f.id', 'f.name', 'f.phoneNumbers', 'c.id as categoryId', 'c.name as categoryName'])
-            ->innerJoin(Category::class, 'c', 'WITH')
-//            ->setParameter('id', $id)
-            ->getQuery()->getSQL();
-        var_dump($firmsList);die();
-//            ->setFirstResult(($page - 1) * $perPage)
-//            ->setMaxResults($perPage)
-//            ->getArrayResult();
-
-        return $this->renderData($firmsList);
-    }
-
-    /**
-     * List firms by category
+     * List firms by name
      * @Route("/firms/byName/{name}/{page}/{perPage}", name="firmsByName",
      *     requirements={"page": "\d+", "perPage": "\d+"},
      *     defaults={"page": 1, "perPage": 100})
@@ -172,11 +153,10 @@ class FirmsController extends ApiController
         $firmRepository = $this->getDoctrine()->getRepository(Firm::class);
         $qb = $firmRepository->createQueryBuilder('f');
 
-        $name = '%' . $name . '%';
         $firmsList = $qb
             ->select(['f.id', 'f.name', 'f.phoneNumbers'])
             ->where($qb->expr()->like('f.name', ':name'))
-            ->setParameter('name', $name)
+            ->setParameter('name', '%' . $name . '%')
             ->getQuery()
             ->setFirstResult(($page - 1) * $perPage)
             ->setMaxResults($perPage)
@@ -184,4 +164,72 @@ class FirmsController extends ApiController
 
         return $this->renderData($firmsList);
     }
+
+    /**
+     * List firms by category in deep
+     * @Route("/firms/byCategoryInDeep/{categoryId}/{page}/{perPage}", name="firmsByCategoryInDeep",
+     *     requirements={"id": "\d+", "page": "\d+", "perPage": "\d+"},
+     *     defaults={"page": 1, "perPage": 100})
+     * @Method("GET")
+     *
+     * @param integer $categoryId
+     * @param integer $page
+     * @param integer $perPage
+     *
+     * @return Response
+     */
+    public function firmsByCategoryInDeepAction($categoryId, $page, $perPage)
+    {
+        /* @var FirmRepository $firmRepository */
+        $firmRepository = $this->getDoctrine()->getRepository(Firm::class);
+        $qb = $firmRepository->createQueryBuilder('f');
+
+        /* @var CategoryRepository $categoryRepository */
+        $categoryRepository = $this->getDoctrine()->getRepository(Category::class);
+        $categoryIds = $categoryRepository->getIdsCategoryTree($categoryId);
+
+        $firmsList = $qb
+            ->select(['f.id', 'f.name', 'f.phoneNumbers'])
+            ->innerJoin('f.categories', 'c')
+            ->where($qb->expr()->in('c.id', $categoryIds))
+            ->distinct()
+            ->getQuery()
+            ->setFirstResult(($page - 1) * $perPage)
+            ->setMaxResults($perPage)
+            ->getArrayResult();
+
+        return $this->renderData($firmsList);
+    }
+
+    /**
+     * List of firms in the category and any subcategories of category
+     * @Route("/firms/byCategory/{categoryId}/{page}/{perPage}", name="categoryFirmList",
+     *     requirements={"id": "\d+", "page": "\d+", "perPage": "\d+"}, defaults={"page": 1, "perPage": 100})
+     * @Method("GET")
+     *
+     * @param integer $categoryId
+     * @param integer $page
+     * @param integer $perPage
+     *
+     * @return Response
+     */
+    public function firmsByCategoryAction($categoryId, $page, $perPage)
+    {
+        /* @var FirmRepository $firmRepository */
+        $firmRepository = $this->getDoctrine()->getRepository(Firm::class);
+
+        $qb = $firmRepository->createQueryBuilder('f');
+        $firmsList = $qb
+            ->select(['f.id', 'f.name', 'f.phoneNumbers'])
+            ->innerJoin('f.categories', 'c')
+            ->where($qb->expr()->eq('c.id', $categoryId))
+            ->distinct()
+            ->getQuery()
+            ->setFirstResult(($page - 1) * $perPage)
+            ->setMaxResults($perPage)
+            ->getArrayResult();
+
+        return $this->renderData($firmsList);
+    }
+
 }

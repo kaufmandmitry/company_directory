@@ -17,7 +17,7 @@ class BuildingsController extends ApiController
 {
 
     /**
-     * Count firms
+     * Count building
      * @Route("/buildings/count", name="buildingsCount")
      * @Method("GET")
      *
@@ -25,15 +25,15 @@ class BuildingsController extends ApiController
      */
     public function countAction()
     {
-        /* @var FirmRepository $firmRepository */
-        $firmRepository = $this->getDoctrine()->getRepository(Building::class);
-        $count = $firmRepository->getCount();
+        /* @var BuildingRepository $buildingRepository */
+        $buildingRepository = $this->getDoctrine()->getRepository(Building::class);
+        $count = $buildingRepository->getCount();
 
-        return $this->renderData($count);
+        return $this->renderData(['count' => $count]);
     }
 
     /**
-     * List Firms
+     * List buildings
      * @Route("/buildings/list/{page}/{perPage}", name="buildingsList", requirements={"page": "\d+", "perPage": "\d+"},
      *      defaults={"page": 1, "perPage": 100})
      * @Method("GET")
@@ -58,8 +58,8 @@ class BuildingsController extends ApiController
     }
 
     /**
-     * View firm
-     * @Route("/building/{id}", name="buildingsView", requirements={"id": "\d+"})
+     * View building
+     * @Route("/buildings/view/{id}", name="buildingsView", requirements={"id": "\d+"})
      * @Method("GET")
      *
      * @param integer $id
@@ -80,34 +80,5 @@ class BuildingsController extends ApiController
             return $this->renderError(404, 'Not found');
         }
         return $this->renderData($building);
-    }
-
-    /**
-     * Get list of firm in the building
-     * @Route("/buildings/firms/{id}/{page}/{perPage}", name="buildingsFirmsList",
-     *     requirements={"id": "\d+", "page": "\d+", "perPage": "\d+"}, defaults={"page": 1, "perPage": 100})
-     * @Method("GET")
-     *
-     * @param integer $id
-     * @param integer $page
-     * @param integer $perPage
-     *
-     * @return Response
-     */
-    public function buildingFirmsAction($id, $page, $perPage)
-    {
-        /* @var FirmRepository $firmRepository */
-        $firmRepository = $this->getDoctrine()->getRepository(Firm::class);
-        $qb = $firmRepository->createQueryBuilder('b');
-        $firmsList = $firmRepository->createQueryBuilder('f')
-            ->select(['f.id', 'f.name', 'f.phoneNumbers', 'b.streetName as street', 'b.buildingNumber as building'])
-            ->innerJoin('f.building', 'b')
-            ->where($qb->expr()->eq('b.id', $id))
-            ->getQuery()
-            ->setFirstResult(($page - 1) * $perPage)
-            ->setMaxResults($perPage)
-            ->getArrayResult();
-
-        return $this->renderData($firmsList);
     }
 }

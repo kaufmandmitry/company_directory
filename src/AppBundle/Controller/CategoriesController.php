@@ -26,7 +26,7 @@ class CategoriesController extends ApiController
         $categoryRepository = $this->getDoctrine()->getRepository(Category::class);
         $count = $categoryRepository->getCount();
 
-        return $this->renderData($count);
+        return $this->renderData(['count' => $count]);
     }
 
     /**
@@ -45,8 +45,7 @@ class CategoriesController extends ApiController
         /* @var CategoryRepository $categoryRepository */
         $categoryRepository = $this->getDoctrine()->getRepository(Category::class);
         $categoriesList = $categoryRepository->createQueryBuilder('c')
-            ->select(['c.id', 'pc.id as parentCategoryId', 'c.name'])
-            ->leftJoin('c.parentCategory', 'pc')
+            ->select(['c.id', 'c.name'])
             ->getQuery()
             ->setFirstResult(($page - 1) * $perPage)
             ->setMaxResults($perPage)
@@ -57,7 +56,7 @@ class CategoriesController extends ApiController
 
     /**
      * View category
-     * @Route("/categories/{id}", name="categoriesView", requirements={"id": "\d+"})
+     * @Route("/categories/view/{id}", name="categoriesView", requirements={"id": "\d+"})
      * @Method("GET")
      *
      * @param integer $id
@@ -70,44 +69,29 @@ class CategoriesController extends ApiController
         $categoryRepository = $this->getDoctrine()->getRepository(Category::class);
         $qb = $categoryRepository->createQueryBuilder('c');
         $category = $qb
-            ->select(['c.id', 'pc.id as parentCategoryId', 'c.name', 'pc.name as parentCategoryName'])
-            ->leftJoin('c.parentCategory', 'pc')
+            ->select(['c.id', 'c.name'])
             ->where($qb->expr()->eq('c.id', $id))
             ->getQuery()
-            ->getArrayResult();
+            ->getSingleResult();
+
         if (!$category) {
             return $this->renderError(404, 'Not found');
         }
-        return $this->renderData($category);
-    }
 
-    /**
-     * List of firms in the category and any subcategories of category
-     * @Route("/categories/firmsByCategory/{id}/{page}/{perPage}", name="categoryFirmList",
-     *     requirements={"id": "\d+", "page": "\d+", "perPage": "\d+"}, defaults={"page": 1, "perPage": 100})
-     * @Method("GET")
-     *
-     * @param integer $id
-     * @param integer $page
-     * @param integer $perPage
-     *
-     * @return Response
-     */
-    public function categoryFirmsAction($id, $page, $perPage)
-    {
-        /* @var FirmRepository $firmRepository */
-        $firmRepository = $this->getDoctrine()->getRepository(Firm::class);
-        $qb = $firmRepository->createQueryBuilder('f');
-        $firmsList = $qb
-            ->select(['f.id', 'f.name', 'f.phoneNumbers'])
-            ->innerJoin(Category::class, 'c', 'WITH', 'c.id = :requestedId')
-            ->setParameter('requestedId', $id)
+        $category['parentCategory'] = $qb
+            ->select(['pc.id', 'pc.name'])
+            ->innerJoin('c.parentCategory', 'pc')
+            ->where($qb->expr()->eq('c.id', $category['id']))
             ->getQuery()
-            ->setFirstResult(($page - 1) * $perPage)
-            ->setMaxResults($perPage)
+            ->getSingleResult();
+
+        $category['childCategories'] = $qb
+            ->select(['cc.id', 'cc.name'])
+            ->innerJoin('c.childCategories', 'cc')
+            ->where($qb->expr()->eq('c.id', $category['id']))
+            ->getQuery()
             ->getArrayResult();
 
-        return $this->renderData($firmsList);
+        return $this->renderData($category);
     }
-
 }

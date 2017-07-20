@@ -13,9 +13,10 @@ use \Doctrine\Common\Collections\ArrayCollection;
  */
 class CategoryRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function getChildrenCategoryIds($id) {
+    // Returns category ids for search in sub categories
+    public function getIdsCategoryTree($id) {
         if ($id == null) {
-            $res = $this->createQueryBuilder('c')->select('c.id')->getQuery()->getScalarResult();
+            $res = $this->createQueryBuilder('c')->select('c.id')->getQuery()->getArrayResult();
             $res = array_map(function ($arrayItem) { return $arrayItem['id'];}, $res);
             return $res;
         }

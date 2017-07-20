@@ -152,4 +152,36 @@ class FirmsController extends ApiController
 
         return $this->renderData($firmsList);
     }
+
+    /**
+     * List firms by category
+     * @Route("/firms/byName/{name}/{page}/{perPage}", name="firmsByName",
+     *     requirements={"page": "\d+", "perPage": "\d+"},
+     *     defaults={"page": 1, "perPage": 100})
+     * @Method("GET")
+     *
+     * @param string $name
+     * @param integer $page
+     * @param integer $perPage
+     *
+     * @return Response
+     */
+    public function firmsByNameAction($name, $page, $perPage)
+    {
+        /* @var FirmRepository $firmRepository */
+        $firmRepository = $this->getDoctrine()->getRepository(Firm::class);
+        $qb = $firmRepository->createQueryBuilder('f');
+
+        $name = '%' . $name . '%';
+        $firmsList = $qb
+            ->select(['f.id', 'f.name', 'f.phoneNumbers'])
+            ->where($qb->expr()->like('f.name', ':name'))
+            ->setParameter('name', $name)
+            ->getQuery()
+            ->setFirstResult(($page - 1) * $perPage)
+            ->setMaxResults($perPage)
+            ->getArrayResult();
+
+        return $this->renderData($firmsList);
+    }
 }

@@ -31,7 +31,7 @@ class CategoriesController extends ApiController
 
     /**
      * List Categories
-     * @Route("/categories/list/{page}/{perPage}", name="categoriesList",  requirements={"page": "\d+", "perPage": "\d+"},
+     * @Route("/categories/list/{page}/{perPage}", name="categoriesList",  requirements={"page": "\d+", "perPage": "(100)|(0*\d{1,2})"},
      *      defaults={"page": 1, "perPage": 100})
      * @Method("GET")
      *

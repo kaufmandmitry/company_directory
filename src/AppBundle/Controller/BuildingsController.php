@@ -34,7 +34,7 @@ class BuildingsController extends ApiController
 
     /**
      * List buildings
-     * @Route("/buildings/list/{page}/{perPage}", name="buildingsList", requirements={"page": "\d+", "perPage": "\d+"},
+     * @Route("/buildings/list/{page}/{perPage}", name="buildingsList", requirements={"page": "\d+", "perPage": "(100)|(0*\d{1,2})"},
      *      defaults={"page": 1, "perPage": 100})
      * @Method("GET")
      *

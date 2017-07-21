@@ -32,7 +32,7 @@ class FirmsController extends ApiController
 
     /**
      * List Firms
-     * @Route("/firms/list/{page}/{perPage}", name="firmsList",  requirements={"page": "\d+", "perPage": "\d+"},
+     * @Route("/firms/list/{page}/{perPage}", name="firmsList",  requirements={"page": "\d+", "perPage": "(100)|(0*\d{1,2})"},
      *      defaults={"page": 1, "perPage": 100})
      * @Method("GET")
      *
@@ -103,7 +103,7 @@ class FirmsController extends ApiController
      * List firms in radius
      * @Route("/firms/byRadius/{x}/{y}/{r}/{page}/{perPage}", name="firmsByRadius",
      *     requirements={"x": "\-?\d+(\.\d{0,})?", "y": "\-?\d+(\.\d{0,})?", "r": "\-?\d+(\.\d{0,})?",
-     *     "page": "\d+", "perPage": "\d+"}, defaults={"page": 1, "perPage": 100})
+     *     "page": "\d+", "perPage": "(100)|(0*\d{1,2})"}, defaults={"page": 1, "perPage": 100})
      *
      * @Method("GET")
      * @param integer $page
@@ -137,7 +137,7 @@ class FirmsController extends ApiController
     /**
      * List firms by name
      * @Route("/firms/byName/{name}/{page}/{perPage}", name="firmsByName",
-     *     requirements={"page": "\d+", "perPage": "\d+"},
+     *     requirements={"page": "\d+", "perPage": "(100)|(0*\d{1,2})"},
      *     defaults={"page": 1, "perPage": 100})
      * @Method("GET")
      *
@@ -168,7 +168,7 @@ class FirmsController extends ApiController
     /**
      * List firms by category in deep
      * @Route("/firms/byCategoryInDeep/{categoryId}/{page}/{perPage}", name="firmsByCategoryInDeep",
-     *     requirements={"id": "\d+", "page": "\d+", "perPage": "\d+"},
+     *     requirements={"id": "\d+", "page": "\d+", "perPage": "(100)|(0*\d{1,2})"},
      *     defaults={"page": 1, "perPage": 100})
      * @Method("GET")
      *
@@ -204,7 +204,7 @@ class FirmsController extends ApiController
     /**
      * List of firms in the category and any subcategories of category
      * @Route("/firms/byCategory/{categoryId}/{page}/{perPage}", name="categoryFirmList",
-     *     requirements={"id": "\d+", "page": "\d+", "perPage": "\d+"}, defaults={"page": 1, "perPage": 100})
+     *     requirements={"id": "\d+", "page": "\d+", "perPage": "(100)|(0*\d{1,2})"}, defaults={"page": 1, "perPage": 100})
      * @Method("GET")
      *
      * @param integer $categoryId

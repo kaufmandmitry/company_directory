@@ -20,36 +20,46 @@ class LoadFirmData extends AbstractFixture implements OrderedFixtureInterface, C
 
     public function load(ObjectManager $manager)
     {
+        /* @var  Firm[] $firms*/
+        $firms = [];
+        $countRows = 0;
         $countFirmOnCategory = $this->container->getParameter('count_firm_on_category');
 
         /* @var Category[] $categories*/
         $categories = $manager->getRepository(Category::class)->findAll();
         $buildings  = $manager->getRepository(Building::class)->findAll();
 
-        foreach ($categories as $category) {
+
+        foreach ($categories as $iCategory => $category) {
             for ($i = 0; $i < $countFirmOnCategory; $i++) {
-                $firm = new Firm();
-                $firm->setName($i . ' Firm' . ' ' . $category->getId());
+                $firms[$countRows] = new Firm();
+                $firms[$countRows]->setName($iCategory * $countFirmOnCategory + $i . ' Firm' . ' ' . $category->getId());
 
                 // Add currentCategory
-                $firm->addCategory($category);
+                $firms[$countRows]->addCategory($category);
 
                 // Add 2 random category
                 for ($j = 0; $j < 2; $j++) {
                     do {
                         $addingCategory = $categories[array_rand($categories)];
-                    } while ($firm->hasCategory($addingCategory));
-                    $firm->addCategory($addingCategory);
+                    } while ($firms[$countRows]->hasCategory($addingCategory));
+                    $firms[$countRows]->addCategory($addingCategory);
                 }
 
                 $countPhones = rand(1, 3);
                 for ($j = 0; $j < $countPhones; $j++) {
-                    $firm->addPhoneNumber('Phone number ' . $j);
+                    $firms[$countRows]->addPhoneNumber('Phone number ' . $j);
                 }
 
-                $firm->setBuilding($buildings[array_rand($buildings)]);
-                $manager->persist($firm);
-                $manager->flush();
+                $firms[$countRows]->setBuilding($buildings[array_rand($buildings)]);
+
+                $manager->persist($firms[$countRows]);
+                $countRows++;
+                if ($countRows == 1000) {
+                    $manager->flush();
+                    $countRows = 0;
+                    $firms = [];
+                }
             }
         }
     }

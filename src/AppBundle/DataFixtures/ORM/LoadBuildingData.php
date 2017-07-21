@@ -19,17 +19,25 @@ class LoadBuildingData extends AbstractFixture implements OrderedFixtureInterfac
 
     public function load(ObjectManager $manager)
     {
+        /* @var Building[] $buildings */
+        $buildings = [];
+        $countRows = 0;
         $countCategories = count($manager->getRepository(Category::class)->findAll());
         for ($i = 0; $i < $countCategories; $i++) {
             for ($j = 0; $j < 3; $j++) {
-                $building = new Building();
-                $building->setStreetName('Street ' . $i); // Count of street is equal to count of category
-                $building->setBuildingNumber($j);         //For 3 buildings per street
-                $building->setCoordinateX(rand(-10000, 10000));
-                $building->setCoordinateY(rand(-10000, 10000));
+                $buildings[$countRows] = new Building();
+                $buildings[$countRows]->setStreetName('Street ' . $i); // Count of street is equal to count of category
+                $buildings[$countRows]->setBuildingNumber($j);         //For 3 buildings per street
+                $buildings[$countRows]->setCoordinateX(rand(-10000, 10000));
+                $buildings[$countRows]->setCoordinateY(rand(-10000, 10000));
+                $manager->persist($buildings[$countRows]);
 
-                $manager->persist($building);
-                $manager->flush();
+                $countRows++;
+                if ($countRows == 1000) {
+                    $manager->flush();
+                    $countRows = 0;
+                    $buildings = [];
+                }
             }
         }
     }

@@ -44,7 +44,7 @@ class LoadCategoryData extends AbstractFixture implements OrderedFixtureInterfac
             }
 
             $parentCategories = $categories;
-
+            $categories = [];
             $em->flush();
         }
     }

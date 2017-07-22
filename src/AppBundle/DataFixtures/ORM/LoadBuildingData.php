@@ -39,6 +39,7 @@ class LoadBuildingData extends AbstractFixture implements OrderedFixtureInterfac
                     $buildings = [];
                 }
             }
+            $manager->flush();
         }
     }
 

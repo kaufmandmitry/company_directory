@@ -61,6 +61,7 @@ class LoadFirmData extends AbstractFixture implements OrderedFixtureInterface, C
                     $firms = [];
                 }
             }
+            $manager->flush();
         }
     }
 

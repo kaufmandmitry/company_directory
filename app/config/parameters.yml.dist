@@ -21,4 +21,6 @@ parameters:
     #Parameters of fixtures
     depth_category_tree: 6
     width_category_tree: 5
+    count_building_on_category: 3
     count_firm_on_category: 5
+

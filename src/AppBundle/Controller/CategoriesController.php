@@ -75,7 +75,7 @@ class CategoriesController extends ApiController
             ->getArrayResult();
 
         if (!$category) {
-            return $this->renderError(404, 'Not found');
+            throw $this->createNotFoundException();
         }
 
         $category['parentCategory'] = $qb

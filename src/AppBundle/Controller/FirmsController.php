@@ -84,7 +84,7 @@ class FirmsController extends ApiController
             ->getArrayResult();
 
         if (!$firm) {
-            return $this->renderError(404, 'Not found');
+            throw $this->createNotFoundException();
         }
 
         $firm['categories'] = $qb->select([

@@ -2,8 +2,10 @@
 namespace AppBundle\Controller\AdvancedControllers;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Debug\Exception\FlattenException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Log\DebugLoggerInterface;
 
 class ApiController extends Controller
 {
@@ -45,6 +47,30 @@ class ApiController extends Controller
         ];
         return new Response(json_encode($body), 200, $headers);
     }
-    
-    
+
+    /**
+     * Show exception
+     *
+     * @param FlattenException $exception
+     *
+     * @param DebugLoggerInterface $logger
+     *
+     * @return Response
+     */
+    public function showExceptionAction($exception, $logger)
+    {
+
+        $headers = ['Content-Type' => 'application/json'];
+        $statusCode = $exception->getStatusCode();
+        $message = $exception->getMessage();
+
+        $body = [
+            'success' => false,
+            'error' => [
+                'code' => $statusCode,
+                'message' => $message,
+            ]
+        ];
+        return new Response(json_encode($body), 200, $headers);
+    }
 }

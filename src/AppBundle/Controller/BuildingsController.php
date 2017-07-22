@@ -8,6 +8,8 @@ use AppBundle\Entity\Firm;
 use AppBundle\Repository\BuildingRepository;
 use AppBundle\Repository\CategoryRepository;
 use AppBundle\Repository\FirmRepository;
+use Symfony\Component\Config\Definition\Exception\Exception;
+use Symfony\Component\Debug\Exception\FlattenException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -77,7 +79,7 @@ class BuildingsController extends ApiController
             ->getQuery()
             ->getArrayResult();
         if (!$building) {
-            return $this->renderError(404, 'Not found');
+            throw $this->createNotFoundException();
         }
         return $this->renderData($building);
     }

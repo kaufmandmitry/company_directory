@@ -55,7 +55,7 @@ class LoadFirmData extends AbstractFixture implements OrderedFixtureInterface, C
 
                 $manager->persist($firms[$countRows]);
                 $countRows++;
-                if ($countRows == 1000) {
+                if ($countRows == 100) {
                     $manager->flush();
                     $countRows = 0;
                     $firms = [];

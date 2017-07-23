@@ -77,7 +77,7 @@ class BuildingsController extends ApiController
             ->select(['b.id', 'b.streetName', 'b.buildingNumber', 'b.coordinateX', 'b.coordinateY'])
             ->where($qb->expr()->eq('b.id', $id))
             ->getQuery()
-            ->getFirstResult();
+            ->getOneOrNullResult();
         if (!$building) {
             throw $this->createNotFoundException();
         }

@@ -1,7 +1,0 @@
-  > purging database
-  > loading [1] AppBundle\DataFixtures\ORM\LoadCategoryData
-  > loading [2] AppBundle\DataFixtures\ORM\LoadBuildingData
-  > purging database
-  > loading [1] AppBundle\DataFixtures\ORM\LoadCategoryData
-  > loading [2] AppBundle\DataFixtures\ORM\LoadBuildingData
-  > loading [3] AppBundle\DataFixtures\ORM\LoadFirmData

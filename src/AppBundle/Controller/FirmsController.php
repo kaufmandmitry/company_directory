@@ -81,7 +81,7 @@ class FirmsController extends ApiController
             ->innerJoin('f.building', 'b')
             ->where($qb->expr()->eq('f.id', $id))
             ->getQuery()
-            ->getArrayResult();
+            ->getFirstResult();
 
         if (!$firm) {
             throw $this->createNotFoundException();

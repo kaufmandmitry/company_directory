@@ -102,7 +102,7 @@ class FirmsController extends ApiController
     /**
      * List firms in radius
      * @Route("/firms/byRadius/{x}/{y}/{r}/{page}/{perPage}", name="firmsByRadius",
-     *     requirements={"x": "\-?\d+(\.\d{0,})?", "y": "\-?\d+(\.\d{0,})?", "r": "\-?\d+(\.\d{0,})?",
+     *     requirements={"x": "\-?\d+(\.\d{0,})?", "y": "\-?\d+(\.\d{0,})?", "r": "\d+(\.\d{0,})?",
      *     "page": "\d+", "perPage": "(100)|(0*\d{1,2})"}, defaults={"page": 1, "perPage": 100})
      *
      * @Method("GET")

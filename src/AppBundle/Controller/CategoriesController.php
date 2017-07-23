@@ -72,7 +72,7 @@ class CategoriesController extends ApiController
             ->select(['c.id', 'c.name'])
             ->where($qb->expr()->eq('c.id', $id))
             ->getQuery()
-            ->getFirstResult();
+            ->getOneOrNullResult();
 
         if (!$category) {
             throw $this->createNotFoundException();

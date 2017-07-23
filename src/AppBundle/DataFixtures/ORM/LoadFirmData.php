@@ -37,7 +37,7 @@ class LoadFirmData extends AbstractFixture implements OrderedFixtureInterface, C
         foreach ($categories as $iCategory => $category) {
             for ($i = 0; $i < $countFirmOnCategory; $i++) {
                 $firms[$countRows] = new Firm();
-                $firms[$countRows]->setName($iCategory * $countFirmOnCategory + $i . ' Firm' . ' ' . $category->getId());
+                $firms[$countRows]->setName($iCategory * $countFirmOnCategory + $i + 1 . ' Firm');
 
                 // Add currentCategory
                 $firms[$countRows]->addCategory($category);

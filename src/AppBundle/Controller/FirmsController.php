@@ -92,7 +92,7 @@ class FirmsController extends ApiController
             'c.name as categoryName'
         ])
         ->innerJoin('f.categories', 'c')
-        ->where($qb->expr()->eq('f.id', $firm[0]['id']))
+        ->where($qb->expr()->eq('f.id', $firm['id']))
         ->getQuery()
         ->getArrayResult();
 

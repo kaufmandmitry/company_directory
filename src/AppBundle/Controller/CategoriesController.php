@@ -81,14 +81,14 @@ class CategoriesController extends ApiController
         $category['parentCategory'] = $qb
             ->select(['pc.id', 'pc.name'])
             ->innerJoin('c.parentCategory', 'pc')
-            ->where($qb->expr()->eq('c.id', $category[0]['id']))
+            ->where($qb->expr()->eq('c.id', $category['id']))
             ->getQuery()
             ->getOneOrNullResult();
 
         $category['childCategories'] = $qb
             ->select(['cc.id', 'cc.name'])
             ->innerJoin('c.childCategories', 'cc')
-            ->where($qb->expr()->eq('c.id', $category[0]['id']))
+            ->where($qb->expr()->eq('c.id', $category['id']))
             ->getQuery()
             ->getArrayResult();
 

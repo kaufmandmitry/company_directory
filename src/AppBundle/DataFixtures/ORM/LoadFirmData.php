@@ -30,41 +30,45 @@ class LoadFirmData extends AbstractFixture implements OrderedFixtureInterface, C
         $categories = $manager->getRepository(Category::class)->findAll();
         $buildings  = $manager->getRepository(Building::class)->findAll();
 
-        $em->getConnection()->beginTransaction();
+        /* @var Firm[] $firms */
+        $firms = [];
+        $countRows = 0;
 
         foreach ($categories as $iCategory => $category) {
             for ($i = 0; $i < $countFirmOnCategory; $i++) {
-                $firm = new Firm();
-                $firm->setName($iCategory * $countFirmOnCategory + $i . ' Firm' . ' ' . $category->getId());
+                $firms[$countRows] = new Firm();
+                $firms[$countRows]->setName($iCategory * $countFirmOnCategory + $i . ' Firm' . ' ' . $category->getId());
 
                 // Add currentCategory
-                $firm->addCategory($category);
+                $firms[$countRows]->addCategory($category);
 
                 // Add 2 random category
                 for ($j = 0; $j < 2; $j++) {
                     do {
                         $addingCategory = $categories[array_rand($categories)];
-                    } while ($firm->hasCategory($addingCategory) && count($firm->getCategories()) < count($categories));
-                    $firm->addCategory($addingCategory);
+                    } while ($firms[$countRows]->hasCategory($addingCategory));
+                    $firms[$countRows]->addCategory($addingCategory);
                 }
 
                 $countPhones = rand(1, 3);
                 for ($j = 0; $j < $countPhones; $j++) {
-                    $firm->addPhoneNumber('Phone number ' . $j);
+                    $firms[$countRows]->addPhoneNumber('Phone number ' . $j);
                 }
 
-                $firm->setBuilding($buildings[array_rand($buildings)]);
+                $firms[$countRows]->setBuilding($buildings[array_rand($buildings)]);
 
-                $em->persist($firm);
-                $em->flush();
+                $em->persist($firms[$countRows]);
 
-                if ($iCategory * count($categories) + $i > 100) {
-                    $em->getConnection()->commit();
-                    $em->getConnection()->beginTransaction();
+                $countRows++;
+                if ($countRows >= 1000) {
+                    $em->flush();
+                    $em->clear(Firm::class);
+                    $countRows = 0;
                 }
             }
         }
-        $em->getConnection()->commit();
+        $em->flush();
+        $em->clear();
     }
 
     public function getOrder()

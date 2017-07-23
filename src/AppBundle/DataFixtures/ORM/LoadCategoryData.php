@@ -42,10 +42,9 @@ class LoadCategoryData extends AbstractFixture implements OrderedFixtureInterfac
                 $categories[$i]->setParentCategory($parentCategories[($i - $i % $widthTree) / $widthTree]);
                 $em->persist($categories[$i]);
             }
-
+            $em->flush();
             $parentCategories = $categories;
             $categories = [];
-            $em->flush();
         }
     }
 

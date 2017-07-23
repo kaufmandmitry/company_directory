@@ -23,28 +23,32 @@ class LoadBuildingData extends AbstractFixture implements OrderedFixtureInterfac
         /* @var EntityManager $em */
         $em = $this->container->get('doctrine.orm.entity_manager');
 
+        /* @var Building[] $buildings */
+        $buildings = [];
+
+        $countRows = 0;
+
         $countBuildingOnCategory = $this->container->getParameter('count_building_on_category');
 
         $countCategories = $manager->getRepository(Category::class)->getCount();
-        $em->getConnection()->beginTransaction();
 
         for ($i = 0; $i < $countCategories; $i++) {
             for ($j = 0; $j < $countBuildingOnCategory; $j++) {
-                $building = new Building();
-                $building->setStreetName('Street ' . $i); // Count of street is equal to count of category
-                $building->setBuildingNumber($j);         //For 3 buildings per street
-                $building->setCoordinateX(rand(-10000, 10000));
-                $building->setCoordinateY(rand(-10000, 10000));
-                $em->persist($building);
-                $em->flush();
-
-                if ($i * $countBuildingOnCategory + $j > 100) {
-                    $em->getConnection()->commit();
-                    $em->getConnection()->beginTransaction();
+                $buildings[$countRows] = new Building();
+                $buildings[$countRows]->setStreetName('Street ' . $i); // Count of street is equal to count of category
+                $buildings[$countRows]->setBuildingNumber($j);         //For 3 buildings per street
+                $buildings[$countRows]->setCoordinateX(rand(-10000, 10000));
+                $buildings[$countRows]->setCoordinateY(rand(-10000, 10000));
+                $em->persist($buildings[$countRows]);
+                $countRows++;
+                if ($countRows >= 1000) {
+                    $em->flush();
+                    $em->clear();
                 }
             }
         }
-        $em->getConnection()->commit();
+        $em->flush();
+        $em->clear();
     }
 
     public function getOrder()
